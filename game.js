@@ -59,3 +59,93 @@ class Actor {
     return true;
   }
 }
+
+//класс Level
+
+class Level {
+  constructor(grid = [], actors = []) {
+    this.grid = grid;
+    this.actors = actors;
+    this.player = actors.find(actor => {
+      if (actor.type === "player") return actor;
+    });
+    this.height = grid.length;
+    this.width = 0;
+    if (grid[0]) {
+      for (let lines of grid) {
+        if (lines.length > this.width) this.width = lines.length;
+      }
+    }
+    this.status = null;
+    this.finishDelay = 1;
+  }
+  isFinished() {
+    if (this.status !== null && this.finishDelay < 0) {
+      return true;
+    }
+    return false;
+  }
+  actorAt(actor) {
+    if (!(actor instanceof Actor) || !actor) {
+      throw new Error("Тип объекта должен быть Actor");
+    }
+    if (!this.grid || this.actors.length === 1) {
+      return undefined;
+    }
+    if (this.actors.length) {
+      for (let item of this.actors) {
+        if (actor.isIntersect(item)) {
+          return item
+        }
+      }
+      return undefined
+    }
+
+  }
+  obstacleAt(pos, size) {
+    if (!(pos instanceof Vector) || !(size instanceof Vector)) {
+      throw new Error("Можно прибавлять к вектору только вектор типа Vector");
+    }
+    if (pos.y + size.y > this.height) return 'lava';
+    if (this.grid[0][0]) {
+      for (let i = Math.floor(pos.y); i < Math.ceil(pos.y + size.y); i++) {
+        for (let j = Math.floor(pos.x); j < Math.ceil(pos.x + size.x); j++) {
+          if (this.grid[i][j] === 'lava') return 'lava';
+        }
+      }
+      for (let i = Math.floor(pos.y); i < Math.ceil(pos.y + size.y); i++) {
+        for (let j = Math.floor(pos.x); j < Math.ceil(pos.x + size.x); j++) {
+          if (this.grid[i][j] === 'wall') return 'wall';
+        }
+      }
+    }
+    if (pos.x < 0 || pos.x + size.x > this.width) return 'wall';
+    if (pos.y < 0) return 'wall';
+
+    return undefined;
+  }
+  removeActor(actor) {
+    if (this.actors.indexOf(actor) >= 0) {
+      this.actors.splice(this.actors.indexOf(actor), 1);
+    }
+  }
+  noMoreActors(type) {
+    for (let item of this.actors) {
+      if (item.type === type) return false;
+    }
+    return true;
+  }
+  playerTouched(type, actor) {
+    if (this.status === null) {
+      if (type === 'lava' || type === 'fireball') this.status = 'lost';
+      if (type === 'coin' && actor) {
+        this.removeActor(actor);
+        let coins = 0;
+        for (let item of this.actors) {
+          if (item.type === 'coin') coins++;
+        }
+        if (!coins) this.status = 'won';
+      }
+    }
+  }
+}
