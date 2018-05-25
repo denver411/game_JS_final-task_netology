@@ -109,17 +109,17 @@ class Level {
     if (pos.y + size.y > this.height) return 'lava';
     if (this.grid[0][0]) {
       for (let i = Math.floor(pos.y); i < Math.ceil(pos.y + size.y); i++) {
-        for (let j = Math.floor(pos.x); j < Math.ceil(pos.x + size.x); j++) {
+        for (let j = Math.floor(pos.x); j <= Math.ceil(pos.x + size.x); j++) {
           if (this.grid[i][j] === 'lava') return 'lava';
         }
       }
       for (let i = Math.floor(pos.y); i < Math.ceil(pos.y + size.y); i++) {
-        for (let j = Math.floor(pos.x); j < Math.ceil(pos.x + size.x); j++) {
+        for (let j = Math.floor(pos.x); j <= Math.ceil(pos.x + size.x); j++) {
           if (this.grid[i][j] === 'wall') return 'wall';
         }
       }
     }
-    if (pos.x < 0 || pos.x + size.x > this.width) return 'wall';
+    if (pos.x < 0 || pos.x + size.x >= this.width) return 'wall';
     if (pos.y < 0) return 'wall';
 
     return undefined;
@@ -148,4 +148,41 @@ class Level {
       }
     }
   }
+}
+
+const grid = [
+  [undefined, undefined],
+  ['wall', 'wall']
+];
+
+function MyCoin(title) {
+  this.type = 'coin';
+  this.title = title;
+}
+MyCoin.prototype = Object.create(Actor);
+MyCoin.constructor = MyCoin;
+
+const goldCoin = new MyCoin('Золото');
+const bronzeCoin = new MyCoin('Бронза');
+const player = new Actor();
+const fireball = new Actor();
+
+const level = new Level(grid, [ goldCoin, bronzeCoin, player, fireball ]);
+
+level.playerTouched('coin', goldCoin);
+level.playerTouched('coin', bronzeCoin);
+
+if (level.noMoreActors('coin')) {
+  console.log('Все монеты собраны');
+  console.log(`Статус игры: ${level.status}`);
+}
+
+const obstacle = level.obstacleAt(new Vector(1, 1), player.size);
+if (obstacle) {
+  console.log(`На пути препятствие: ${obstacle}`);
+}
+
+const otherActor = level.actorAt(player);
+if (otherActor === fireball) {
+  console.log('Пользователь столкнулся с шаровой молнией');
 }
