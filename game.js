@@ -18,6 +18,14 @@ class Vector {
   }
 }
 
+//код для проверки
+const start = new Vector(30, 50);
+const moveTo = new Vector(5, 10);
+const finish = start.plus(moveTo.times(2));
+
+console.log(`Исходное расположение: ${start.x}:${start.y}`);
+console.log(`Текущее расположение: ${finish.x}:${finish.y}`);
+
 
 //класс Actor
 
@@ -59,6 +67,37 @@ class Actor {
     return true;
   }
 }
+
+//код для проверки
+
+let items = new Map();
+let player = new Actor();
+items.set('Игрок', player);
+items.set('Первая монета', new Actor(new Vector(10, 10)));
+items.set('Вторая монета', new Actor(new Vector(15, 5)));
+
+function position(item) {
+  return ['left', 'top', 'right', 'bottom']
+    .map(side => `${side}: ${item[side]}`)
+    .join(', ');
+}
+
+function movePlayer(x, y) {
+  player.pos = player.pos.plus(new Vector(x, y));
+}
+
+function status(item, title) {
+  console.log(`${title}: ${position(item)}`);
+  if (player.isIntersect(item)) {
+    console.log(`Игрок подобрал ${title}`);
+  }
+}
+
+items.forEach(status);
+movePlayer(10, 10);
+items.forEach(status);
+movePlayer(5, -5);
+items.forEach(status);
 
 //класс Level
 
@@ -150,7 +189,9 @@ class Level {
   }
 }
 
-const grid = [
+//код для проверки
+
+let grid = [
   [undefined, undefined],
   ['wall', 'wall']
 ];
@@ -164,10 +205,10 @@ MyCoin.constructor = MyCoin;
 
 const goldCoin = new MyCoin('Золото');
 const bronzeCoin = new MyCoin('Бронза');
-const player = new Actor();
+player = new Actor();
 const fireball = new Actor();
 
-const level = new Level(grid, [ goldCoin, bronzeCoin, player, fireball ]);
+let level = new Level(grid, [goldCoin, bronzeCoin, player, fireball]);
 
 level.playerTouched('coin', goldCoin);
 level.playerTouched('coin', bronzeCoin);
@@ -186,3 +227,85 @@ const otherActor = level.actorAt(player);
 if (otherActor === fireball) {
   console.log('Пользователь столкнулся с шаровой молнией');
 }
+
+
+
+//Парсер уровня
+class LevelParser {
+  constructor(objects) {
+    this.objects = objects;
+  }
+
+  actorFromSymbol(symb) {
+    if (!symb || !this.objects[symb]) return undefined;
+    return this.objects[symb];
+  }
+
+  obstacleFromSymbol(symb) {
+    switch (symb) {
+      case 'x':
+        return 'wall';
+      case '!':
+        return 'lava';
+      default:
+        return undefined;
+    }
+  }
+  createGrid(plan) {
+    if (!plan) return [];
+    const grid = plan.slice();
+    for (let items in grid) {
+      grid[items] = grid[items].split('');
+      for (let item in grid[items]) {
+        grid[items][item] = this.obstacleFromSymbol(grid[items][item]);
+        // if (!grid[items][item]) grid[items][item] = 'undefined';
+      }
+    }
+    return grid;
+  }
+
+  createActors(plan) {
+    if (!plan || !this.objects) return [];
+    const actors = [];
+    for (let y = 0; y < plan.length; y++) {
+      if (plan[y]) {
+        const planParse = plan[y].split('');
+        for (let x = 0; x < planParse.length; x++) {
+          if (Actor.isPrototypeOf(this.objects[planParse[x]]) || this.objects[planParse[x]] === Actor) {
+            actors.push(new this.objects[planParse[x]](new Vector(x, y)));
+          }
+        }
+      }
+    }
+    return actors
+  }
+  parse(plan) {
+    return new Level(this.createGrid(plan), this.createActors(plan))
+  }
+}
+
+
+//Проверка кода
+const plan = [
+  ' @ ',
+  'x!x'
+];
+
+const actorsDict = Object.create(null);
+actorsDict['@'] = Actor;
+
+const parser = new LevelParser(actorsDict);
+level = parser.parse(plan);
+
+level.grid.forEach((line, y) => {
+  line.forEach((cell, x) => console.log(`(${x}:${y}) ${cell}`));
+});
+
+level.actors.forEach(actor => console.log(`(${actor.pos.x}:${actor.pos.y}) ${actor.type}`));
+
+//попытка запуска игры
+// grid = [
+//   new Array(3), ['wall', 'wall', 'lava']
+// ];
+// level = new Level(grid);
+// runLevel(level, DOMDisplay);
