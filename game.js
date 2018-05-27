@@ -258,7 +258,6 @@ class LevelParser {
       grid[items] = grid[items].split('');
       for (let item in grid[items]) {
         grid[items][item] = this.obstacleFromSymbol(grid[items][item]);
-        // if (!grid[items][item]) grid[items][item] = 'undefined';
       }
     }
     return grid;
@@ -302,6 +301,92 @@ level.grid.forEach((line, y) => {
 });
 
 level.actors.forEach(actor => console.log(`(${actor.pos.x}:${actor.pos.y}) ${actor.type}`));
+
+class Fireball extends Actor {
+  constructor(pos = new Vector(0, 0), speed = new Vector(0, 0)) {
+    super(pos);
+    this.speed = speed;
+    this.size = new Vector(1, 1);
+  }
+  get type() {
+    return 'fireball';
+  }
+  getNextPosition(time = 1) {
+    return new Vector(this.pos.x + this.speed.x * time, this.pos.y + this.speed.y * time);
+  }
+  handleObstacle() {
+    this.speed.x = -this.speed.x;
+    this.speed.y = -this.speed.y;
+    return this.speed;
+  }
+  act(time, level) {
+    if (!level.obstacleAt(this.getNextPosition(time), this.size)) {
+      this.pos = this.getNextPosition(time);
+    } else {
+      this.handleObstacle();
+    }
+  }
+}
+
+
+//проверка кода
+const time = 5;
+const speed = new Vector(1, 0);
+position = new Vector(5, 5);
+
+const ball = new Fireball(position, speed);
+
+const nextPosition = ball.getNextPosition(time);
+console.log(`Новая позиция: ${nextPosition.x}: ${nextPosition.y}`);
+
+ball.handleObstacle();
+console.log(`Текущая скорость: ${ball.speed.x}: ${ball.speed.y}`);
+
+class HorizontalFireball extends Fireball {
+  constructor(pos, size) {
+    super(pos, size);
+    this.speed = new Vector(2, 0);
+  }
+}
+
+class VerticalFireball extends Fireball {
+  constructor(pos, size) {
+    super(pos, size);
+    this.speed = new Vector(0, 2);
+  }
+}
+
+class FireRain extends Fireball {
+  constructor(pos, size) {
+    super(pos, size);
+    this.speed = new Vector(0, 3);
+    this.startPos = pos;
+  }
+  handleObstacle() {
+    this.pos = this.startPos;
+  }
+}
+
+class Coin extends Actor {
+  constructor(pos = new Vector(0, 0)) {
+    super(speed);
+    this.size = new Vector(0.6, 0.6);
+    this.pos = pos.plus(new Vector(0.2, 0.1));
+    this.springSpeed = 8;
+    this.springDist = 0.07;
+    this.spring = +(Math.random() * 2 * Math.PI).toFixed(4);
+  }
+  get type() {
+    return 'coin';
+  }
+  updateSpring(time = 1) {
+    this.spring += this.springSpeed * time;
+  }
+  getSpringVector(){
+    return new Vector (0, Math.sin(this.spring) * this.springDist)
+  }
+  
+}
 
 //попытка запуска игры
 // grid = [
