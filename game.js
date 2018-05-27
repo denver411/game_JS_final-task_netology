@@ -383,17 +383,30 @@ class Coin extends Actor {
   updateSpring(time = 1) {
     this.spring += this.springSpeed * time;
   }
-  getSpringVector(){
-    return new Vector (0, Math.sin(this.spring) * this.springDist)
+  getSpringVector() {
+    return new Vector(0, Math.sin(this.spring) * this.springDist)
   }
-  getNextPosition(time = 1){
+  getNextPosition(time = 1) {
     this.updateSpring(time);
     return this.startPos.plus(this.getSpringVector())
   }
-  act(time = 1){
+  act(time = 1) {
     this.pos = this.getNextPosition(time);
   }
 }
+
+class Player extends Actor {
+  constructor(pos = new Vector(0, 0)) {
+    super();
+    this.speed = new Vector(0, 0);
+    this.size = new Vector(0.8, 1.5);
+    this.pos = pos.plus(new Vector(0, -0.5));
+  }
+  get type() {
+    return 'player';
+  }
+}
+
 
 //попытка запуска игры
 // grid = [
