@@ -145,14 +145,18 @@ class Level {
     if (!(pos instanceof Vector) || !(size instanceof Vector)) {
       throw new Error('Можно прибавлять к вектору только вектор типа Vector');
     }
-    if (pos.y + size.y > this.height) return 'lava';
-    if (pos.x < 0 || pos.x + size.x >= this.width) return 'wall';
-    if (pos.y <= 0) return 'wall';
+    if (pos.y + size.y > this.height) {
+      return 'lava';
+    };
+    if (pos.x < 0 || pos.x + size.x > this.width || pos.y < 0) {
+      return 'wall';
+    };
     if (this.grid.length) {
       for (let i = Math.floor(pos.y); i < Math.ceil(pos.y + size.y); i++) {
-        for (let j = Math.floor(pos.x); j <= Math.ceil(pos.x + size.x); j++) {
-          if (this.grid[i][j] === 'lava') return 'lava';
-          if (this.grid[i][j] === 'wall') return 'wall';
+        for (let j = Math.floor(pos.x); j < Math.ceil(pos.x + size.x); j++) {
+          if (this.grid[i][j] === 'lava' || this.grid[i][j] === 'wall') {
+            return this.grid[i][j];
+          };
         }
       }
     }
@@ -184,7 +188,7 @@ class Level {
   }
 }
 
-//код для проверки
+// код для проверки
 
 // let grid = [
 //   [undefined, undefined],
@@ -200,7 +204,7 @@ class Level {
 
 // const goldCoin = new MyCoin('Золото');
 // const bronzeCoin = new MyCoin('Бронза');
-// player = new Actor();
+// let player = new Actor();
 // const fireball = new Actor();
 
 // let level = new Level(grid, [goldCoin, bronzeCoin, player, fireball]);
@@ -232,7 +236,9 @@ class LevelParser {
   }
 
   actorFromSymbol(symb) {
-    if (!symb || !this.objects[symb]) return undefined;
+    if (!symb || !this.objects[symb]) {
+      return undefined;
+    };
     return this.objects[symb];
   }
 
@@ -432,8 +438,8 @@ const actorDict = {
   'o': Coin
 }
 const parser = new LevelParser(actorDict);
-loadLevels().then(levels => runGame(JSON.parse(levels), parser, DOMDisplay))
+// loadLevels().then(levels => runGame(JSON.parse(levels), parser, DOMDisplay))
 // loadLevels().then(levels => console.log(JSON.parse(levels)))
-// runGame(schema, parser, DOMDisplay)
+runGame(schema, parser, DOMDisplay)
   .then(() => console.log('Вы выиграли приз!'))
   .catch(() => console.log('Вы проиграли!'))
