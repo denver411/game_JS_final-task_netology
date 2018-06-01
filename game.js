@@ -9,7 +9,7 @@ class Vector {
   }
   plus(vector) {
     if (!(vector instanceof Vector)) {
-      throw new Error("Можно прибавлять к вектору только вектор типа Vector");
+      throw new Error('Можно прибавлять к вектору только вектор типа Vector');
     }
     return new Vector(this.x + vector.x, this.y + vector.y);
   }
@@ -32,7 +32,7 @@ class Vector {
 class Actor {
   constructor(pos = new Vector(0, 0), size = new Vector(1, 1), speed = new Vector(0, 0)) {
     if (!(pos instanceof Vector) || !(size instanceof Vector) || !(speed instanceof Vector)) {
-      throw new Error("Можно прибавлять к вектору только вектор типа Vector");
+      throw new Error('Можно прибавлять к вектору только вектор типа Vector');
     }
     this.pos = pos;
     this.size = size;
@@ -56,7 +56,7 @@ class Actor {
   act() {}
   isIntersect(actor) {
     if (!(actor instanceof Actor)) {
-      throw new Error("Тип объекта должен быть Actor");
+      throw new Error('Тип объекта должен быть Actor');
     }
     if (this.pos === actor.pos && this.size === actor.size) {
       return false
@@ -106,7 +106,7 @@ class Level {
     this.grid = grid;
     this.actors = actors;
     this.player = actors.find(actor => {
-      if (actor.type === "player") return actor;
+      if (actor.type === 'player') return actor;
     });
     this.height = grid.length;
     this.width = 0;
@@ -126,7 +126,7 @@ class Level {
   }
   actorAt(actor) {
     if (!(actor instanceof Actor) || !actor) {
-      throw new Error("Тип объекта должен быть Actor");
+      throw new Error('Тип объекта должен быть Actor');
     }
     if (!this.grid || this.actors.length === 1) {
       return undefined;
@@ -143,7 +143,7 @@ class Level {
   }
   obstacleAt(pos, size) {
     if (!(pos instanceof Vector) || !(size instanceof Vector)) {
-      throw new Error("Можно прибавлять к вектору только вектор типа Vector");
+      throw new Error('Можно прибавлять к вектору только вектор типа Vector');
     }
     if (pos.y + size.y > this.height) return 'lava';
     if (pos.x < 0 || pos.x + size.x >= this.width) return 'wall';
@@ -152,7 +152,7 @@ class Level {
       for (let i = Math.floor(pos.y); i < Math.ceil(pos.y + size.y); i++) {
         for (let j = Math.floor(pos.x); j <= Math.ceil(pos.x + size.x); j++) {
           if (this.grid[i][j] === 'lava') return 'lava';
-          if (this.grid[i][j] === "wall") return 'wall';
+          if (this.grid[i][j] === 'wall') return 'wall';
         }
       }
     }
