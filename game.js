@@ -39,16 +39,16 @@ class Actor {
     this.speed = speed;
   }
   get left() {
-    return +this.pos.x;
+    return Number(this.pos.x);
   }
   get right() {
-    return +this.pos.x + +this.size.x;
+    return Number(this.pos.x + this.size.x);
   }
   get top() {
-    return +this.pos.y;
+    return Number(this.pos.y);
   }
   get bottom() {
-    return +this.pos.y + +this.size.y;
+    return Number(this.pos.y + this.size.y);
   }
   get type() {
     return 'actor';
@@ -155,8 +155,9 @@ class Level {
     if (this.grid.length) {
       for (let i = Math.floor(pos.y); i < Math.ceil(pos.y + size.y); i++) {
         for (let j = Math.floor(pos.x); j < Math.ceil(pos.x + size.x); j++) {
-          if (this.grid[i][j] === 'lava' || this.grid[i][j] === 'wall') {
-            return this.grid[i][j];
+          let position = this.grid[i][j];
+          if (position === 'lava' || position === 'wall') {
+            return position;
           };
         }
       }
@@ -257,13 +258,14 @@ class LevelParser {
     if (!plan) {
       return []
     };
-    const grid = plan.slice();
-    for (let items in grid) {
-      grid[items] = grid[items].split('');
-      for (let item in grid[items]) {
-        grid[items][item] = this.obstacleFromSymbol(grid[items][item]);
-      }
-    }
+    const grid = [];
+    plan.forEach((line, posY) => {
+      grid.push([]);      
+      let lineArray = line.split('');
+      lineArray.forEach((element) => {
+        grid[posY].push(this.obstacleFromSymbol(element));  
+      });
+    });
     return grid;
   }
 
@@ -276,7 +278,7 @@ class LevelParser {
       let planParse = plan[posY].split('');
       for (let posX in planParse) {
         if (Actor.isPrototypeOf(this.objects[planParse[posX]]) || this.objects[planParse[posX]] === Actor) {
-          actors.push(new this.objects[planParse[posX]](new Vector(+posX, +posY)));
+          actors.push(new this.objects[planParse[posX]](new Vector(Number(posX), Number(posY))));
         }
       }
     }
@@ -380,7 +382,7 @@ class Coin extends Actor {
     this.pos = pos.plus(new Vector(0.2, 0.1));
     this.springSpeed = 8;
     this.springDist = 0.07;
-    this.spring = +(Math.random() * 2 * Math.PI).toFixed(4);
+    this.spring = Number((Math.random() * 2 * Math.PI).toFixed(4));
   }
   get type() {
     return 'coin';
