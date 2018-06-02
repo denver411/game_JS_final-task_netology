@@ -39,16 +39,16 @@ class Actor {
     this.speed = speed;
   }
   get left() {
-    return this.pos.x;
+    return +this.pos.x;
   }
   get right() {
-    return this.pos.x + this.size.x;
+    return +this.pos.x + +this.size.x;
   }
   get top() {
-    return this.pos.y;
+    return +this.pos.y;
   }
   get bottom() {
-    return this.pos.y + this.size.y;
+    return +this.pos.y + +this.size.y;
   }
   get type() {
     return 'actor';
@@ -110,10 +110,8 @@ class Level {
     });
     this.height = grid.length;
     this.width = 0;
-    if (grid[0]) {
-      for (let lines of grid) {
-        if (lines.length > this.width) this.width = lines.length;
-      }
+    for (let lines of grid) {
+      if (Array.isArray(lines) && lines.length > this.width) this.width = lines.length;
     }
     this.status = null;
     this.finishDelay = 1;
@@ -253,7 +251,9 @@ class LevelParser {
     }
   }
   createGrid(plan) {
-    if (!plan) return [];
+    if (!plan) {
+      return []
+    };
     const grid = plan.slice();
     for (let items in grid) {
       grid[items] = grid[items].split('');
@@ -265,18 +265,22 @@ class LevelParser {
   }
 
   createActors(plan) {
-    if (!plan || !this.objects) return [];
+    if (!plan || !this.objects) {
+      return []
+    };
     const actors = [];
-    for (let y = 0; y < plan.length; y++) {
-      if (plan[y]) {
-        const planParse = plan[y].split('');
-        for (let x = 0; x < planParse.length; x++) {
-          if (Actor.isPrototypeOf(this.objects[planParse[x]]) || this.objects[planParse[x]] === Actor) {
-            actors.push(new this.objects[planParse[x]](new Vector(x, y)));
+    for (let posY in plan) {
+        let planParse = plan[posY].split('');
+        for (let posX in planParse) {
+          if (Actor.isPrototypeOf(this.objects[planParse[posX]]) || this.objects[planParse[posX]] === Actor) {
+            actors.push(new this.objects[planParse[posX]](new Vector(+posX, +posY)));
           }
         }
-      }
+        console.log(planParse);
     }
+    // console.log(plan);
+    
+    console.log(actors);
     return actors
   }
   parse(plan) {
@@ -442,4 +446,4 @@ const parser = new LevelParser(actorDict);
 // loadLevels().then(levels => console.log(JSON.parse(levels)))
 runGame(schema, parser, DOMDisplay)
   .then(() => console.log('Вы выиграли приз!'))
-  .catch(() => console.log('Вы проиграли!'))
+  // .catch(() => console.log('Вы проиграли!'))
