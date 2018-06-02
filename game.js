@@ -391,7 +391,7 @@ class Coin extends Actor {
     this.pos = pos.plus(new Vector(0.2, 0.1));
     this.springSpeed = 8;
     this.springDist = 0.07;
-    this.spring = Number((Math.random() * 2 * Math.PI).toFixed(4));
+    this.spring = Math.random() * 2 * Math.PI;
   }
   get type() {
     return 'coin';
@@ -453,7 +453,5 @@ const actorDict = {
 }
 const parser = new LevelParser(actorDict);
 // loadLevels().then(levels => runGame(JSON.parse(levels), parser, DOMDisplay))
-// loadLevels().then(levels => console.log(JSON.parse(levels)))
 runGame(schema, parser, DOMDisplay)
   .then(() => console.log('Вы выиграли приз!'))
-// .catch(() => console.log('Вы проиграли!'))
