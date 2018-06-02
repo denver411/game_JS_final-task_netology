@@ -153,9 +153,9 @@ class Level {
       return 'wall';
     };
     if (this.grid.length) {
-      for (let i = Math.floor(pos.y); i < Math.ceil(pos.y + size.y); i++) {
-        for (let j = Math.floor(pos.x); j < Math.ceil(pos.x + size.x); j++) {
-          let position = this.grid[i][j];
+      for (let y = Math.floor(pos.y); y < Math.ceil(pos.y + size.y); y++) {
+        for (let x = Math.floor(pos.x); x < Math.ceil(pos.x + size.x); x++) {
+          let position = this.grid[y][x];
           if (position === 'lava' || position === 'wall') {
             return position;
           };
