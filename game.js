@@ -260,10 +260,10 @@ class LevelParser {
     };
     const grid = [];
     plan.forEach((line, posY) => {
-      grid.push([]);      
-      let lineArray = line.split('');
+      grid.push([]);
+      const lineArray = line.split('');
       lineArray.forEach((element) => {
-        grid[posY].push(this.obstacleFromSymbol(element));  
+        grid[posY].push(this.obstacleFromSymbol(element));
       });
     });
     return grid;
@@ -274,14 +274,23 @@ class LevelParser {
       return []
     };
     const actors = [];
-    for (let posY in plan) {
-      let planParse = plan[posY].split('');
-      for (let posX in planParse) {
-        if (Actor.isPrototypeOf(this.objects[planParse[posX]]) || this.objects[planParse[posX]] === Actor) {
-          actors.push(new this.objects[planParse[posX]](new Vector(Number(posX), Number(posY))));
+    plan.forEach((line, posY) => {
+      const lineArray = line.split('');
+      lineArray.forEach((lineElement, posX) => {
+        if (Actor.isPrototypeOf(this.objects[lineArray[posX]]) || this.objects[lineArray[posX]] === Actor) {
+          actors.push(new this.objects[lineArray[posX]](new Vector(Number(posX), Number(posY))));
         }
-      }
-    }
+      });
+    })
+
+    // for (let posY in plan) {
+    //   let planParse = plan[posY].split('');
+    //   for (let posX in planParse) {
+    //     if (Actor.isPrototypeOf(this.objects[planParse[posX]]) || this.objects[planParse[posX]] === Actor) {
+    //       actors.push(new this.objects[planParse[posX]](new Vector(Number(posX), Number(posY))));
+    //     }
+    //   }
+    // }
     return actors
   }
   parse(plan) {
