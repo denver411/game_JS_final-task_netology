@@ -110,8 +110,11 @@ class Level {
     });
     this.height = grid.length;
     this.width = 0;
+
     for (let lines of grid) {
-      if (Array.isArray(lines) && lines.length > this.width) this.width = lines.length;
+      if (Array.isArray(lines)) {
+        this.width = Math.max(lines.length, this.width);
+      }
     }
     this.status = null;
     this.finishDelay = 1;
@@ -270,17 +273,13 @@ class LevelParser {
     };
     const actors = [];
     for (let posY in plan) {
-        let planParse = plan[posY].split('');
-        for (let posX in planParse) {
-          if (Actor.isPrototypeOf(this.objects[planParse[posX]]) || this.objects[planParse[posX]] === Actor) {
-            actors.push(new this.objects[planParse[posX]](new Vector(+posX, +posY)));
-          }
+      let planParse = plan[posY].split('');
+      for (let posX in planParse) {
+        if (Actor.isPrototypeOf(this.objects[planParse[posX]]) || this.objects[planParse[posX]] === Actor) {
+          actors.push(new this.objects[planParse[posX]](new Vector(+posX, +posY)));
         }
-        console.log(planParse);
+      }
     }
-    // console.log(plan);
-    
-    console.log(actors);
     return actors
   }
   parse(plan) {
@@ -446,4 +445,4 @@ const parser = new LevelParser(actorDict);
 // loadLevels().then(levels => console.log(JSON.parse(levels)))
 runGame(schema, parser, DOMDisplay)
   .then(() => console.log('Вы выиграли приз!'))
-  // .catch(() => console.log('Вы проиграли!'))
+// .catch(() => console.log('Вы проиграли!'))
