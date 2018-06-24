@@ -188,11 +188,10 @@ class LevelParser {
     plan.forEach((line, posY) => {
       const lineArray = line.split('');
       lineArray.forEach((lineElement, posX) => {
-		  let obj = this.actorFromSymbol(lineElement);
-		  if (typeof obj === 'function'){
-        if (new obj instanceof Actor) {
+        let obj = this.actorFromSymbol(lineElement);
+        if (typeof obj === 'function' && new obj instanceof Actor) {
           actors.push(new obj(new Vector(Number(posX), Number(posY))));
-        }}
+        }
       });
     })
     return actors
