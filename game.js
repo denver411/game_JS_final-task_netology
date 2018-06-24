@@ -94,7 +94,6 @@ class Level {
       }
       return undefined
     }
-
   }
   obstacleAt(pos, size) {
     if (!(pos instanceof Vector) || !(size instanceof Vector)) {
@@ -144,7 +143,6 @@ class Level {
   }
 }
 
-
 class LevelParser {
   constructor(objects) {
     this.objects = objects;
@@ -190,9 +188,11 @@ class LevelParser {
     plan.forEach((line, posY) => {
       const lineArray = line.split('');
       lineArray.forEach((lineElement, posX) => {
-        if (Actor.isPrototypeOf(this.objects[lineArray[posX]]) || this.objects[lineArray[posX]] === Actor) {
-          actors.push(new this.objects[lineArray[posX]](new Vector(Number(posX), Number(posY))));
-        }
+		  let obj = this.actorFromSymbol(lineElement);
+		  if (typeof obj === 'function'){
+        if (new obj instanceof Actor) {
+          actors.push(new obj(new Vector(Number(posX), Number(posY))));
+        }}
       });
     })
     return actors
