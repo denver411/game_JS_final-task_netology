@@ -322,6 +322,6 @@ const actorDict = {
   'o': Coin
 }
 const parser = new LevelParser(actorDict);
-// loadLevels().then(levels => runGame(JSON.parse(levels), parser, DOMDisplay))
-runGame(schema, parser, DOMDisplay)
+loadLevels().then(levels => runGame(JSON.parse(levels), parser, DOMDisplay))
+// runGame(schema, parser, DOMDisplay)
   .then(() => console.log('Вы выиграли приз!'))
